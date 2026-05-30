@@ -16,6 +16,3 @@ const app = initializeApp(firebaseConfig);
 
 // 🔥 Firestore database 
 export const db = getFirestore(app);
-
-// Optional analytics (can stay, but not required)
-// const analytics = getAnalytics(app);
