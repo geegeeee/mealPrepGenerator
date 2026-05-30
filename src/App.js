@@ -73,7 +73,7 @@ function App() {
 
         // 🔥 STEP 2: remove last 3 generated items
         let filteredPool = basePool.filter(
-          (item) => !history.slice(-3).includes(item.name)
+          (item) => !history.slice(-5).includes(item.name)
         );
 
         // fallback if everything got filtered out
