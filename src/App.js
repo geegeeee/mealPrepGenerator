@@ -15,7 +15,7 @@ function App() {
     }
   });
   const [generatedItem, setGeneratedItem] = useState("");
-  const [history, setHistory] = useState([]);
+  // const [history, setHistory] = useState([]);
   const [isSpinning, setIsSpinning] = useState(false);
   const [filter, setFilter] = useState("All");
 
