@@ -82,7 +82,7 @@ function App() {
           pool[Math.floor(Math.random() * pool.length)];
 
         setGeneratedItem(final.name);
-        setHistory((prev) => [...prev, final.name]);
+        // setHistory((prev) => [...prev, final.name]);
         setIsSpinning(false);
       }
     }, 100);
