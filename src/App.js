@@ -15,14 +15,9 @@ function App() {
     }
   });
   const [generatedItem, setGeneratedItem] = useState("");
-  // const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState([]);
   const [isSpinning, setIsSpinning] = useState(false);
   const [filter, setFilter] = useState("All");
-
-  // Save to localStorage whenever items change
-  // useEffect(() => {
-  //   localStorage.setItem("foodItems", JSON.stringify(items));
-  // }, [items]);
 
   const addItem = (item, category) => {
     if (!item.trim()) return;
@@ -52,14 +47,13 @@ function App() {
       return;
     }
 
-    // 🔥 STEP 1: apply filter first
-    const pool =
+    // 🔥 STEP 1: filter by category
+    const basePool =
       filter === "All"
         ? items
         : items.filter((item) => item.category === filter);
 
-    // if no items in selected category
-    if (pool.length === 0) {
+    if (basePool.length === 0) {
       setGeneratedItem(`No items in ${filter}`);
       return;
     }
@@ -70,19 +64,32 @@ function App() {
     let spinCount = 0;
 
     const spinInterval = setInterval(() => {
-      const tempIndex = Math.floor(Math.random() * pool.length);
-      setGeneratedItem(pool[tempIndex].name);
+      const tempIndex = Math.floor(Math.random() * basePool.length);
+      setGeneratedItem(basePool[tempIndex].name);
       spinCount++;
 
       if (spinCount > 10) {
         clearInterval(spinInterval);
 
-        // final selection (same pool!)
+        // 🔥 STEP 2: remove last 3 generated items
+        let filteredPool = basePool.filter(
+          (item) => !history.slice(-3).includes(item.name)
+        );
+
+        // fallback if everything got filtered out
+        if (filteredPool.length === 0) {
+          filteredPool = basePool;
+        }
+
+        // 🔥 STEP 3: final selection
         const final =
-          pool[Math.floor(Math.random() * pool.length)];
+          filteredPool[Math.floor(Math.random() * filteredPool.length)];
 
         setGeneratedItem(final.name);
-        // setHistory((prev) => [...prev, final.name]);
+
+        // 🔥 STEP 4: update history
+        setHistory((prev) => [...prev, final.name]);
+
         setIsSpinning(false);
       }
     }, 100);
