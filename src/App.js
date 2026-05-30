@@ -107,6 +107,7 @@ function App() {
         <RandomGenerator
           generatedItem={generatedItem}
           generateRandomItem={generateRandomItem}
+          isSpinning={isSpinning}
         />
       </div>
     </div>
