@@ -1,19 +1,25 @@
 function RandomGenerator({
-    generatedItem, generateRandomItem}){
-    
-    return(
-        <div className="generator-container">
-            <button
-                className="generate-btn"
-                onClick={generateRandomItem}>
-                Generate Meal Prep!!
-            </button>
+  generatedItem,
+  generateRandomItem,
+  isSpinning
+}) {
+  return (
+    <div className="generator-container">
 
-            <div className="result-box">
-                {generatedItem || "Nothing generated yet."}
-            </div>
-        </div>
-    );
+      <button
+        className="generate-btn"
+        onClick={generateRandomItem}
+        disabled={isSpinning}
+      >
+        {isSpinning ? "Spinning..." : "Generate 🍜"}
+      </button>
+
+      <div className={`result-box ${isSpinning ? "spinning" : ""}`}>
+        {generatedItem || "Press generate to pick your meal"}
+      </div>
+
+    </div>
+  );
 }
 
 export default RandomGenerator;

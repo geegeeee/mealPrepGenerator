@@ -5,58 +5,108 @@ import ItemList from "./components/ItemList";
 import RandomGenerator from "./components/RandomGenerator";
 
 function App() {
-  const [items, setItems] = useState([]);
-  const [generatedItem, setGeneratedItem] = useState([]);
-
-  useEffect(()=>{
-    const savedItems = localStorage.getItem("foodItems");
-
-    if(savedItems){
-      setItems(JSON.parse(savedItems));
+  const [items, setItems] = useState(() => {
+    try {
+      const saved = localStorage.getItem("foodItems");
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
     }
-  }, []);
+  });
+  const [generatedItem, setGeneratedItem] = useState("");
+  const [history, setHistory] = useState([]);
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [filter, setFilter] = useState("All");
 
-  // save items whenever they change
-  useEffect(()=>{
+  // Save to localStorage whenever items change
+  useEffect(() => {
     localStorage.setItem("foodItems", JSON.stringify(items));
-  },[items]);
+  }, [items]);
 
-  const addItem = (item) => {
-    if(!item.trim()) return;
-    setItems([...items, item]);
+  const addItem = (item, category) => {
+    if (!item.trim()) return;
+
+    const newItem = {
+      name: item.trim(),
+      category: category || "Uncategorized"
+    };
+
+    // prevent duplicates
+    const exists = items.some(
+      (i) => i.name.toLowerCase() === newItem.name.toLowerCase()
+    );
+
+    if (exists) return;
+
+    setItems((prev) => [...prev, newItem]);
   };
 
-  const deleteItem = (indextoDelete) => {
-    const updatedItems = items.filter(
-      (_, index) => index !== indextoDelete
+  const deleteItem = (indexToDelete) => {
+    setItems((prev) =>
+      prev.filter((_, index) => index !== indexToDelete)
     );
-    setItems(updatedItems);
   };
 
   const generateRandomItem = () => {
-    if(items.length ===0){
+    if (items.length === 0) {
       setGeneratedItem("No food items available.");
       return;
     }
-    const randomIndex = Math.floor(
-      Math.random()*Math.random()*items.length
-    );
-    setGeneratedItem(items[randomIndex]);
+
+    setIsSpinning(true);
+    setGeneratedItem("");
+
+    let spinCount = 0;
+
+    const spinInterval = setInterval(() => {
+      const tempIndex = Math.floor(Math.random() * items.length);
+      setGeneratedItem(items[tempIndex].name);
+      spinCount++;
+
+      if (spinCount > 10) {
+        clearInterval(spinInterval);
+
+        // final selection (avoid last 3)
+        let filtered = items.filter(
+          (item) => !history.slice(-3).includes(item.name)
+        );
+
+        if (filtered.length === 0) {
+          filtered = items;
+        }
+
+        const final =
+          filtered[Math.floor(Math.random() * filtered.length)];
+
+        setGeneratedItem(final.name);
+
+        setHistory((prev) => [...prev, final.name]);
+        setIsSpinning(false);
+      }
+    }, 100);
   };
 
+  const filteredItems =
+  filter === "All"
+    ? items
+    : items.filter((item) => item.category === filter);
+
   return (
-    <div className='container'>
-      <div className='left-panel'>
+    <div className="container">
+      <div className="left-panel">
         <ItemList
-          items = {items}
-          addItem = {addItem}
-          deleteItem = {deleteItem}
-        />
+            items={filteredItems}
+            addItem={addItem}
+            deleteItem={deleteItem}
+            setFilter={setFilter}
+            currentFilter={filter}
+          />
       </div>
-      <div className='right-panel'>
+
+      <div className="right-panel">
         <RandomGenerator
-          generatedItem = {generatedItem}
-          generateRandomItem = {generateRandomItem}
+          generatedItem={generatedItem}
+          generateRandomItem={generateRandomItem}
         />
       </div>
     </div>
