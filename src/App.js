@@ -1,6 +1,7 @@
 import './App.css';
 import { useEffect, useState } from 'react';
 
+import { addMeal, deleteMeal, subscribeToMeals } from "./firebaseService";
 import ItemList from "./components/ItemList";
 import RandomGenerator from "./components/RandomGenerator";
 
@@ -19,9 +20,9 @@ function App() {
   const [filter, setFilter] = useState("All");
 
   // Save to localStorage whenever items change
-  useEffect(() => {
-    localStorage.setItem("foodItems", JSON.stringify(items));
-  }, [items]);
+  // useEffect(() => {
+  //   localStorage.setItem("foodItems", JSON.stringify(items));
+  // }, [items]);
 
   const addItem = (item, category) => {
     if (!item.trim()) return;
@@ -31,20 +32,18 @@ function App() {
       category: category || "Uncategorized"
     };
 
-    // prevent duplicates
     const exists = items.some(
       (i) => i.name.toLowerCase() === newItem.name.toLowerCase()
     );
 
     if (exists) return;
 
-    setItems((prev) => [...prev, newItem]);
+    // ALSO send to Firebase
+    addMeal(newItem);
   };
 
-  const deleteItem = (indexToDelete) => {
-    setItems((prev) =>
-      prev.filter((_, index) => index !== indexToDelete)
-    );
+  const deleteItem = (id) => {
+    deleteMeal(id);
   };
 
   const generateRandomItem = () => {
@@ -90,6 +89,14 @@ function App() {
   filter === "All"
     ? items
     : items.filter((item) => item.category === filter);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToMeals((data) => {
+      setItems(data);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div className="container">

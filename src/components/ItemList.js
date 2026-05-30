@@ -58,7 +58,7 @@ function ItemList({ items, addItem, deleteItem, setFilter, currentFilter }) {
           <li key={index} className="item animate-item">
             <button
               className="delete-btn"
-              onClick={() => deleteItem(index)}
+              onClick={() => deleteItem(item.id)}
             >
               −
             </button>
