@@ -52,33 +52,36 @@ function App() {
       return;
     }
 
+    // 🔥 STEP 1: apply filter first
+    const pool =
+      filter === "All"
+        ? items
+        : items.filter((item) => item.category === filter);
+
+    // if no items in selected category
+    if (pool.length === 0) {
+      setGeneratedItem(`No items in ${filter}`);
+      return;
+    }
+
     setIsSpinning(true);
     setGeneratedItem("");
 
     let spinCount = 0;
 
     const spinInterval = setInterval(() => {
-      const tempIndex = Math.floor(Math.random() * items.length);
-      setGeneratedItem(items[tempIndex].name);
+      const tempIndex = Math.floor(Math.random() * pool.length);
+      setGeneratedItem(pool[tempIndex].name);
       spinCount++;
 
       if (spinCount > 10) {
         clearInterval(spinInterval);
 
-        // final selection (avoid last 3)
-        let filtered = items.filter(
-          (item) => !history.slice(-3).includes(item.name)
-        );
-
-        if (filtered.length === 0) {
-          filtered = items;
-        }
-
+        // final selection (same pool!)
         const final =
-          filtered[Math.floor(Math.random() * filtered.length)];
+          pool[Math.floor(Math.random() * pool.length)];
 
         setGeneratedItem(final.name);
-
         setHistory((prev) => [...prev, final.name]);
         setIsSpinning(false);
       }

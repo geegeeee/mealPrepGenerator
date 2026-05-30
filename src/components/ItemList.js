@@ -9,7 +9,7 @@ function ItemList({ items, addItem, deleteItem, setFilter, currentFilter }) {
     setInput("");
   };
 
-  const categories = ["All", "Asian", "Western", "Quick", "Healthy"];
+  const categories = ["All", "Asian", "Western"];
 
   return (
     <div className="panel">
@@ -43,8 +43,6 @@ function ItemList({ items, addItem, deleteItem, setFilter, currentFilter }) {
         >
           <option>Asian</option>
           <option>Western</option>
-          <option>Quick</option>
-          <option>Healthy</option>
         </select>
 
         <button className="add-btn" onClick={handleAdd}>
